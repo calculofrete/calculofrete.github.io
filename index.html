@@ -4,101 +4,172 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Valor Proporcional por Peso</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
-            background-image: url('fundo.png'); 
-            background-size: cover; 
-            background-position: center; 
+            background-image: url('fundo.png');
+            background-size: cover;
+            background-position: center;
             background-attachment: fixed;
+            color: white;
         }
+
+        h1 {
+            text-align: center;
+        }
+
+        .container {
+            background-color: rgba(0,0,0,0.7);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 500px;
+            margin: auto;
+        }
+
         label {
             display: block;
             margin-bottom: 8px;
+            margin-top: 15px;
         }
-        input {
-            padding: 8px;
-            margin-bottom: 12px;
-            width: 200px;
+
+        input, textarea {
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            border-radius: 5px;
+            border: none;
+            margin-bottom: 10px;
         }
+
+        textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
         button {
-            padding: 10px 20px;
+            padding: 12px 20px;
             background-color: #4CAF50;
             color: white;
             border: none;
             cursor: pointer;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 16px;
         }
+
         button:hover {
             background-color: #45a049;
         }
+
         .resultado {
             margin-top: 20px;
             padding: 15px;
-            background-color: rgba(0, 0, 0, 0.7); 
-            color: white; 
-            font-size: 18px; 
+            background-color: rgba(255,255,255,0.1);
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            max-width: 400px; 
-            margin: 20px auto; 
         }
-        .resultado ol {
-            padding-left: 20px; 
-        }
+
         .resultado li {
             margin-bottom: 10px;
         }
+
+        .total {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #90EE90;
+        }
     </style>
 </head>
+
 <body>
 
-    <h1 style="text-align:center">Calculadora de divisão de frete</h1>
+    <div class="container">
 
-    <label for="valor">Total do Frete</label>
-    <input type="number" id="valor" placeholder="Digite o valor total do frete em R$" required>
+        <h1>Calculadora de divisão de frete</h1>
 
-    <label for="pesos">Pesos (separados por vírgula):</label>
-    <input type="text" id="pesos" placeholder="Digite os pesos em kg" required>
+        <label for="valor">Total do Frete</label>
+        <input type="number" id="valor" step="0.01" placeholder="Digite o valor total do frete em R$">
 
-    <button onclick="calcular()">Calcular</button>
+        <label for="pesos">Pesos (um por linha)</label>
 
-    <div class="resultado" id="resultado"></div>
+        <textarea id="pesos" placeholder="Exemplo:
+12.5
+8
+3.7
+15"></textarea>
+
+        <button onclick="calcular()">Calcular</button>
+
+        <div class="resultado" id="resultado"></div>
+
+    </div>
 
     <script>
-        function calcular() {
-            var valor = parseFloat(document.getElementById("valor").value);
-            var pesos = document.getElementById("pesos").value.split(",").map(function(peso) {
-                return parseFloat(peso.trim());
-            });
 
-            if (isNaN(valor) || pesos.some(isNaN) || pesos.includes(0)) {
-                alert("Por favor, insira valores válidos para o valor e os pesos.");
+        function calcular() {
+
+            var valor = parseFloat(document.getElementById("valor").value);
+
+            var pesos = document.getElementById("pesos")
+                .value
+                .split("\n")
+                .map(p => parseFloat(p.trim()))
+                .filter(p => !isNaN(p));
+
+            if (isNaN(valor) || pesos.length === 0 || pesos.some(p => p <= 0)) {
+                alert("Por favor, insira valores válidos.");
                 return;
             }
 
-            // Soma total dos pesos
-            var somaPesos = pesos.reduce(function(soma, peso) {
-                return soma + peso;
-            }, 0);
+            var somaPesos = pesos.reduce((soma, peso) => soma + peso, 0);
 
-            var resultadoHTML = "<ol>"; // Alterado para <ol> para lista numerada
-            pesos.forEach(function(peso) {
-                // Calcula o valor proporcional para cada peso
-                var valorProporcional = (peso / somaPesos) * valor;
+            var resultadoHTML = "<ol>";
 
-                // Formatação com vírgula e ponto de milhar
-                var valorFormatado = valorProporcional.toLocaleString('pt-BR', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
+            var somaValores = 0;
 
-                resultadoHTML += "<li> " + " R$ " + valorFormatado + "</li>";
+            pesos.forEach((peso, index) => {
+
+                var valorProporcional;
+
+                // Último item recebe ajuste para fechar exatamente o valor total
+                if (index === pesos.length - 1) {
+
+                    valorProporcional = valor - somaValores;
+
+                } else {
+
+                    valorProporcional =
+                        Math.round(((peso / somaPesos) * valor) * 100) / 100;
+
+                    somaValores += valorProporcional;
+                }
+
+                resultadoHTML += `
+                    <li>
+                        Peso: ${peso} kg →
+                        <strong>R$ ${valorProporcional.toLocaleString('pt-BR', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        })}</strong>
+                    </li>
+                `;
             });
+
             resultadoHTML += "</ol>";
-            
+
+            resultadoHTML += `
+                <div class="total">
+                    Total distribuído: R$ ${valor.toLocaleString('pt-BR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    })}
+                </div>
+            `;
+
             document.getElementById("resultado").innerHTML = resultadoHTML;
         }
+
     </script>
 
 </body>
