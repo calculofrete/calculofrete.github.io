@@ -79,6 +79,17 @@
             font-weight: bold;
             color: #90EE90;
         }
+
+        .aviso {
+            background-color: rgba(255, 255, 0, 0.15);
+            border-left: 4px solid #ffd700;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 14px;
+            line-height: 1.5;
+        }
     </style>
 </head>
 
@@ -88,10 +99,18 @@
 
         <h1>Calculadora de divisão de frete</h1>
 
+        <div class="aviso">
+            <strong>Observações:</strong><br><br>
+
+            1 - Em caso de ter C5, diminuir previamente do valor do frete.<br>
+
+            2 - Caso o valor do frete tenha centavos, incluir esses centavos na última divisão, pois o sistema ignora centavos.
+        </div>
+
         <label for="valor">Total do Frete</label>
         <input type="number" id="valor" step="0.01" placeholder="Digite o valor total do frete em R$">
 
-        <label for="pesos">Pesos (um por linha)</label>
+        <label for="pesos">Pesos (um por linha) Obs: Usar peso arredondado.</label>
 
         <textarea id="pesos" placeholder="Exemplo:
 12
