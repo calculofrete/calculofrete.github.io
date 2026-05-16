@@ -109,12 +109,12 @@
 
         function calcular() {
 
-            var valor = parseFloat(document.getElementById("valor").value);
+            var valor = parseInt(document.getElementById("valor").value);
 
             var pesos = document.getElementById("pesos")
                 .value
                 .split("\n")
-                .map(p => parseFloat(p.trim()))
+                .map(p => Math.round(parseFloat(p.trim())))
                 .filter(p => !isNaN(p));
 
             if (isNaN(valor) || pesos.length === 0 || pesos.some(p => p <= 0)) {
@@ -132,15 +132,14 @@
 
                 var valorProporcional;
 
-                // Último item recebe ajuste para fechar exatamente o valor total
+                // Último item ajusta diferença
                 if (index === pesos.length - 1) {
 
                     valorProporcional = valor - somaValores;
 
                 } else {
 
-                    valorProporcional =
-                        Math.round(((peso / somaPesos) * valor) * 100) / 100;
+                    valorProporcional = Math.round((peso / somaPesos) * valor);
 
                     somaValores += valorProporcional;
                 }
@@ -148,24 +147,12 @@
                 resultadoHTML += `
                     <li>
                         Peso: ${peso} kg →
-                        <strong>R$ ${valorProporcional.toLocaleString('pt-BR', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
-                        })}</strong>
+                        <strong>R$ ${valorProporcional}</strong>
                     </li>
                 `;
             });
 
             resultadoHTML += "</ol>";
-
-            resultadoHTML += `
-                <div class="total">
-                    Total distribuído: R$ ${valor.toLocaleString('pt-BR', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    })}
-                </div>
-            `;
 
             document.getElementById("resultado").innerHTML = resultadoHTML;
         }
