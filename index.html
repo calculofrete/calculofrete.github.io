@@ -1,83 +1,130 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Valor Proporcional por Peso</title>
+    <title>Sistema de Cálculos</title>
 
     <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            padding: 20px;
             background-image: url('fundo.png');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             color: white;
+            height: 100vh;
+            display: flex;
+        }
+
+        /* MENU */
+
+        .menu {
+            width: 250px;
+            background-color: rgba(0, 0, 0, 0.88);
+            padding: 20px;
+        }
+
+        .menu h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .menu button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 6px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .menu button:hover {
+            background-color: #45a049;
+        }
+
+        /* CONTEÚDO */
+
+        .conteudo {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .tela {
+            display: none;
+            background-color: rgba(0, 0, 0, 0.75);
+            padding: 25px;
+            border-radius: 10px;
+            max-width: 700px;
+        }
+
+        .ativa {
+            display: block;
         }
 
         h1 {
-            text-align: center;
-        }
-
-        .container {
-            background-color: rgba(0,0,0,0.7);
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 500px;
-            margin: auto;
+            margin-bottom: 20px;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
             margin-top: 15px;
+            margin-bottom: 5px;
         }
 
-        input, textarea {
-            padding: 10px;
+        input,
+        textarea {
             width: 100%;
-            box-sizing: border-box;
+            padding: 10px;
             border-radius: 5px;
             border: none;
             margin-bottom: 10px;
+            font-size: 15px;
         }
 
         textarea {
-            resize: vertical;
             min-height: 150px;
+            resize: vertical;
         }
 
-        button {
-            padding: 12px 20px;
+        .botao-calcular {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
             background-color: #4CAF50;
             color: white;
-            border: none;
             cursor: pointer;
-            border-radius: 5px;
-            width: 100%;
             font-size: 16px;
+            margin-top: 10px;
         }
 
-        button:hover {
+        .botao-calcular:hover {
             background-color: #45a049;
         }
 
         .resultado {
             margin-top: 20px;
-            padding: 15px;
             background-color: rgba(255,255,255,0.1);
+            padding: 15px;
             border-radius: 8px;
+            line-height: 1.8;
         }
 
         .resultado li {
             margin-bottom: 10px;
-        }
-
-        .total {
-            margin-top: 15px;
-            font-weight: bold;
-            color: #90EE90;
         }
 
         .aviso {
@@ -90,58 +137,177 @@
             font-size: 14px;
             line-height: 1.5;
         }
+
     </style>
+
 </head>
 
 <body>
 
-    <div class="container">
+    <!-- MENU -->
 
-        <h1>Calculadora de divisão de frete</h1>
+    <div class="menu">
 
-        <div class="aviso">
-            <strong>Observações:</strong><br><br>
+        <h2>MENU</h2>
 
-            1 - Em caso de ter C5, diminuir previamente do valor do frete.<br>
+        <button onclick="mostrarTela('frete')">
+            Divisão de Frete
+        </button>
 
-            2 - Caso o valor do frete tenha centavos, incluir esses centavos na última divisão, pois o sistema ignora centavos.
+        <button onclick="mostrarTela('icms')">
+            Calculadora PADRÃO PESO
+        </button>
+
+    </div>
+
+    <!-- CONTEÚDO -->
+
+    <div class="conteudo">
+
+        <!-- TELA FRETE -->
+
+        <div id="frete" class="tela ativa">
+
+            <h1>Calculadora de divisão de frete</h1>
+
+            <div class="aviso">
+
+                <strong>Observações:</strong><br><br>
+
+                1 - Em caso de ter C5, diminuir previamente do valor do frete.<br>
+
+                2 - Caso o valor do frete tenha centavos, incluir esses centavos na última divisão, pois o sistema ignora centavos.
+
+            </div>
+
+            <label>Total do Frete</label>
+
+            <input
+                type="number"
+                id="valor"
+                placeholder="Digite o valor total do frete"
+            >
+
+            <label>Pesos (um por linha) Obs: Use pesos arrendondados</label>
+
+            <textarea
+                id="pesos"
+                placeholder="Exemplo:
+10
+15
+20"
+            ></textarea>
+
+            <button
+                class="botao-calcular"
+                onclick="calcularFrete()"
+            >
+                Calcular
+            </button>
+
+            <div
+                class="resultado"
+                id="resultado"
+            ></div>
+
         </div>
 
-        <label for="valor">Total do Frete</label>
-        <input type="number" id="valor" step="0.01" placeholder="Digite o valor total do frete em R$">
+        <!-- TELA PADRÃO PESO -->
 
-        <label for="pesos">Pesos (um por linha) Obs: Usar peso arredondado.</label>
+        <div id="icms" class="tela">
 
-        <textarea id="pesos" placeholder="Exemplo:
-12
-8
-3
-15"></textarea>
+            <h1>Calculadora PADRÃO PESO</h1>
 
-        <button onclick="calcular()">Calcular</button>
+            <div class="aviso">
 
-        <div class="resultado" id="resultado"></div>
+                Informe o valor pretendido e o percentual de ICMS para obter os cálculos automaticamente.
+
+            </div>
+
+            <label>Valor pretendido</label>
+
+            <input
+                type="number"
+                id="valorPretendido"
+                placeholder="Digite o valor pretendido"
+            >
+
+            <label>% ICMS</label>
+
+            <input
+                type="number"
+                id="icmsPercentual"
+                placeholder="Digite o percentual de ICMS"
+            >
+
+            <button
+                class="botao-calcular"
+                onclick="calcularICMS()"
+            >
+                Calcular
+            </button>
+
+            <div
+                class="resultado"
+                id="resultadoICMS"
+            ></div>
+
+        </div>
 
     </div>
 
     <script>
 
-        function calcular() {
+        // TROCA DE TELAS
 
-            var valor = parseInt(document.getElementById("valor").value);
+        function mostrarTela(id) {
 
-            var pesos = document.getElementById("pesos")
-                .value
-                .split("\n")
-                .map(p => Math.round(parseFloat(p.trim())))
-                .filter(p => !isNaN(p));
+            var telas =
+                document.querySelectorAll('.tela');
 
-            if (isNaN(valor) || pesos.length === 0 || pesos.some(p => p <= 0)) {
+            telas.forEach(tela => {
+
+                tela.classList.remove('ativa');
+
+            });
+
+            document
+                .getElementById(id)
+                .classList.add('ativa');
+        }
+
+        // CALCULADORA DE FRETE
+
+        function calcularFrete() {
+
+            var valor =
+                parseInt(
+                    document.getElementById("valor").value
+                );
+
+            var pesos =
+                document.getElementById("pesos")
+                    .value
+                    .split("\n")
+                    .map(p => Math.round(parseFloat(p.trim())))
+                    .filter(p => !isNaN(p));
+
+            if (
+                isNaN(valor)
+                || pesos.length === 0
+                || pesos.some(p => p <= 0)
+            ) {
+
                 alert("Por favor, insira valores válidos.");
+
                 return;
             }
 
-            var somaPesos = pesos.reduce((soma, peso) => soma + peso, 0);
+            var somaPesos =
+                pesos.reduce(
+                    (soma, peso) => soma + peso,
+                    0
+                );
 
             var resultadoHTML = "<ol>";
 
@@ -151,32 +317,99 @@
 
                 var valorProporcional;
 
-                // Último item ajusta diferença
+
                 if (index === pesos.length - 1) {
 
-                    valorProporcional = valor - somaValores;
+                    valorProporcional =
+                        valor - somaValores;
 
                 } else {
 
-                    valorProporcional = Math.round((peso / somaPesos) * valor);
+                    valorProporcional =
+                        Math.round(
+                            (peso / somaPesos) * valor
+                        );
 
                     somaValores += valorProporcional;
                 }
 
                 resultadoHTML += `
+                
                     <li>
-                        Peso: ${peso} kg →
-                        <strong>R$ ${valorProporcional}</strong>
+                        Peso ${peso} kg →
+                        <strong>
+                            R$ ${valorProporcional}
+                        </strong>
                     </li>
                 `;
             });
 
             resultadoHTML += "</ol>";
 
-            document.getElementById("resultado").innerHTML = resultadoHTML;
+            document
+                .getElementById("resultado")
+                .innerHTML = resultadoHTML;
+        }
+
+        // CALCULADORA PADRÃO PESO
+
+        function calcularICMS() {
+
+            var valorPretendido =
+                parseFloat(
+                    document.getElementById("valorPretendido").value
+                );
+
+            var icms =
+                parseFloat(
+                    document.getElementById("icmsPercentual").value
+                );
+
+            if (
+                isNaN(valorPretendido)
+                || isNaN(icms)
+                || icms >= 100
+            ) {
+
+                alert("Preencha os valores corretamente.");
+
+                return;
+            }
+
+            // Valor retornado
+
+            var valorRetornado =
+                valorPretendido /
+                (1 - (icms / 100));
+
+            // Valor a ser usado
+
+            var valorUsado =
+                (valorPretendido * valorPretendido)
+                / valorRetornado;
+
+            document
+                .getElementById("resultadoICMS")
+                .innerHTML = `
+
+                <p>
+                    <strong>Valor retornado:</strong><br>
+
+                    R$ ${valorRetornado.toFixed(2)}
+                </p>
+
+                <br>
+
+                <p>
+                    <strong>Valor a ser usado:</strong><br>
+
+                    R$ ${valorUsado.toFixed(2)}
+                </p>
+            `;
         }
 
     </script>
 
 </body>
+
 </html>
